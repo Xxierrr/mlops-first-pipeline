@@ -1,0 +1,288 @@
+MACHINE LEARNING — STRUCTURED NOTES
+
+==================================================
+1. IMPORTANT TOPICS
+==================================================
+
+1. MLOps -> LLMOps -> AgentOps -> AIOps
+   - MLOps: Important
+   - LLMOps: Important
+
+2. DataOps and Data Engineering: Important
+
+
+==================================================
+2. MLOps (Machine Learning Operations)
+==================================================
+
+Goal: Reliable predictions in production.
+
+Repeatable ML Lifecycle:
+
+1. Data Ingestion
+2. Data Validation
+3. Training
+4. Logging
+5. Evaluation
+6. Model Registry
+7. Deployment
+8. Monitoring
+9. Retraining Trigger -> Repeat the lifecycle
+
+
+==================================================
+3. LLMOps (Large Language Model Operations)
+==================================================
+
+Goal: Save as many tokens as possible while getting good output.
+
+- It is like having reusable prompts.
+- With every new stack, we have a new version.
+
+LLMOps Lifecycle:
+
+1. Corpus and Data Preparation
+2. Prompt and Model Development
+3. Offline Evaluation
+4. Deployment
+5. Tracing
+6. ____________________
+
+
+==================================================
+4. AIOps (Artificial Intelligence for IT Operations)
+==================================================
+
+AIOps sits over MLOps and LLMOps, checking logs, events, etc.
+
+
+==================================================
+PHASE 1: BUILDING AN ML APPLICATION USING FASTAPI
+==================================================
+
+STEP 1: Create a Virtual Environment
+
+Command:
+python -m venv .venv
+
+
+STEP 2: Activate the Virtual Environment
+
+Command (Windows):
+.venv\Scripts\activate
+
+
+STEP 3: Create the Project Folder
+
+Project folder:
+ml-firstPipeline/
+
+
+STEP 4: Install the Required Packages
+
+- scikit-learn -> Machine learning
+- joblib -> Save and load models
+- fastapi -> API creation
+- uvicorn -> Server implementation
+- pydantic -> Check whether input/output data matches the expected structure
+
+
+STEP 5: Train the Model
+
+Command:
+python train.py
+
+
+STEP 6: Create and Start the API
+
+Command:
+uvicorn main:app --reload
+
+
+STEP 7: Test the API
+
+Input JSON:
+
+{
+  "sepal_length": 5.1,
+  "sepal_width": 3.5,
+  "petal_length": 1.6,
+  "petal_width": 0.5
+}
+
+
+==================================================
+PHASE 2: DOCKERIZE THE ML APPLICATION
+==================================================
+
+1. TRADITIONAL ML FLOW
+
+Dataset
+   |
+   v
+Training
+   |
+   v
+Model Evaluation
+   |
+   v
+Prediction
+
+
+2. PRODUCTION-READY ML APPLICATION
+
+Workflow:
+
+Saved Model
+    |
+    v
+Python Application
+    |
+    v
+REST API
+    |
+    v
+Automated Testing
+    |
+    v
+Docker Container
+    |
+    v
+CI/CD
+
+A production-ready ML application can be tested, deployed,
+accessed by clients, and maintained consistently.
+
+
+3. MODEL TRAINING (OFFLINE)
+
+Dataset
+   |
+   v
+train.py
+   |
+   v
+models/iris_model.joblib
+
+- Serialization: Saving the trained model.
+- Deserialization: Loading the saved model.
+
+
+4. DOCKER CONTAINER ARCHITECTURE
+
++----------------------------------------------------------+
+|                    DOCKER CONTAINER                      |
+|                                                          |
+|  +----------------------------------------------------+  |
+|  |           Python Runtime + Dependencies            |  |
+|  |                                                    |  |
+|  |  +----------------------------------------------+  |  |
+|  |  |       FastAPI Application (main.py)           |  |  |
+|  |  |                                              |  |  |
+|  |  |  API Endpoints:                              |  |  |
+|  |  |  - GET /health                               |  |  |
+|  |  |  - POST /predict                             |  |  |
+|  |  |                                              |  |  |
+|  |  |              Load Model                      |  |  |
+|  |  |          iris_model.joblib                   |  |  |
+|  |  +----------------------------------------------+  |  |
+|  |                                                    |  |
+|  +----------------------------------------------------+  |
+|                                                          |
+|                 Exposes on Port 8000                    |
++----------------------------------------------------------+
+
+
+between docker and client we have request and response
+
+5. CLIENT / USER
+
+Input:
+Sepal and Petal Measurements
+          |
+          v
+     Prediction: 0
+
+
+Why we need docker ?? 
+- reason is that one ml application working on some one's lets say A device but failed in another let's say B 
+        ->  possible reason's be different python versions 
+        -> missing python packages or there version 
+        -> different OS Dependencies
+
+so  in what terms docker gonna help .....
+SO Docker helps package your application code, runtime, dependencies, and startup 
+
+4 major requirements 
+        - Dockerfile - Instructions for packaging the ML application
+        - Image - packaged reusable application artifact
+        - container - Running instance of that image
+        - port mapping -makes the api inside the container accessible from your system 
+
+Commands for docker
+1. docker ps _> print all running containers
+2. docker ps -a _> print active or non-active containers
+3. docker ps -t <name_of image> .
+
+Note - every thing will be shared will be image 
+
+.dockerignore - file where you dont want to put unwanted files as a image 
+
+docker images - list all images
+5. start the container
+   docker run -d --name ml-api -p 8000:8000
+   -d for detach when not want logs in termainal of vs code 
+   name of container must not have space
+   first port for locally and second for docker 
+
+==================================================
+PHASE 3: Automated Testing and CI/CD with github actions 
+==================================================
+
+Developer pushes code to github
+Github actions start the workflow 
+Trigger by a push or pull request 
+Run tests:
+
+    Validate model API behaviour
+    Build images
+    veraify docker packaging 
+
+    3 tools help <jenkins , github actions, git lab>
+
+What is CI/CD?
+CI - Continous Intigeration: Automatically code changes through test and build checks 
+CD - Continous Delivery : Keeps changes ready for release , with production release potentially requiring approval 
+CD - Continous Deployement : Automatically release changes to production when all required check pass 
+
+Automated Testing
+    -Automated testing catches issues before a changes move to production
+    -pytest + fastapi test client + github actions
+
+Update the project structure
+ -mlops-first-pipeline
+ ------tests
+ -----------test_api.py
+ ------.github
+ -----------workflows
+ ----------------ci.yml
+
+Now install 2 new pacakges:
+-httpx: fast api test client uses HTTPx tosimulate http request to your application
+-pytest: it discovers and run automated tests, report failures, and returns non zero exit status when test fails
+
+pip install httpx pytest
+
+Run test Locally:
+    python -m pytest -v
+
+Now Create a github action workflow
+
+   push the project to the Github
+   Commands:- 
+   git init
+   git add README.md
+   git commit -m "first commit"
+   git branch -M main
+   git remote add origin https://github.com/Xxierrr/mlops-first-pipeline.git
+   git push -u origin main

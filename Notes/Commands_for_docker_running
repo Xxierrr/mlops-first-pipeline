@@ -1,0 +1,7 @@
+Commands for Docker :
+1. docker ps = print all running containers
+2. docker ps -a = print all active / non-active containers
+3. docker build -t cse-mlops . (only works in dockerfile is in this folder) = build docker image
+4. docker images =list locally available docker images
+5. Start the container:
+    docker run -d --name iris-ml-api -p 8000:8000 cse-mlops
