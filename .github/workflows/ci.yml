@@ -41,6 +41,6 @@ jobs:
 
             #Step -5 : Build the Docker image
             - name: Build Docker image
-              run: docker build -t iris-ml-api:#{{ github.sha }} . # Build the Docker image with a unique tag based on the commit hash
+              run: docker build -t iris-ml-api:${{ github.sha }} . # Build the Docker image with a unique tag based on the commit hash
               
 
