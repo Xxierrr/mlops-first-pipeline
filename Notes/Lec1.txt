@@ -281,7 +281,7 @@ Now Create a github action workflow
    push the project to the Github
    Commands:- 
    git init
-   git add README.md
+   git add .
    git commit -m "first commit"
    git branch -M main
    git remote add origin https://github.com/Xxierrr/mlops-first-pipeline.git
